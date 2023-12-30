@@ -31,31 +31,24 @@ class FirebaseFirestoreOptions {
     });
   }
 
-  Future<Iterable<UserModel>> getAllUsers({required String myUid}) async {
-    final users = await _db.collection("users").get().then(
-          (value) =>
-          value.docs
+  Stream<Iterable<ChatModel>> getChats({
+    required String myUid,
+    required String userUid,
+  }) {
+    final chatId = (myUid + userUid);
+    final stream = _db.collection("chatRoom").doc(chatId).collection('chats').orderBy('time', descending: true).snapshots();
+    return stream.map((event) => event.docs.map((e) => ChatModel.fromFirebase(e)));
+  }
+
+  Stream<Iterable<UserModel>> getAllUsers({required String myUid}) {
+    final users = _db.collection("users").snapshots().map(
+          (event) =>
+          event.docs
               .where((element) => element.id != myUid)
               .map(
                 (doc) => UserModel.fromFirebase(doc),
           ),
     );
     return users;
-  }
-
-  Future<Iterable<ChatModel>> getAllChats({
-    required String myUid,
-    required String userUid,
-  }) async {
-    final chatId = (myUid + userUid);
-    final chats = await _db
-        .collection("chatRoom")
-        .doc(chatId)
-        .collection("chats")
-        .orderBy('time', descending: true)
-        .get()
-        .then((value) =>
-        value.docs.map((e) => ChatModel.fromFirebase(e)));
-    return chats;
   }
 }

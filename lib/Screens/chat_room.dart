@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:we_chat/firebase/firebase_firestore/firebase_firestore_options.dart';
+import 'package:we_chat/firebase/models/chat_model.dart';
 import 'package:we_chat/widgets/chat_tile.dart';
 
 class ChatRoomScreen extends StatefulWidget {
@@ -33,11 +35,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            FutureBuilder(
-              future: firestore.getAllChats(
-                  myUid: widget.myUid, userUid: widget.userUid),
+            StreamBuilder<Iterable<ChatModel>>(
+              stream: firestore.getChats(myUid: widget.myUid, userUid: widget.userUid,),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
+                switch(snapshot.connectionState) {
+                  case ConnectionState.active:
+                  case ConnectionState.waiting:
                   if (snapshot.hasData) {
                     final chats = snapshot.data ?? [];
                     return Container(
@@ -65,16 +68,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       ),
                     );
                   }
-                } else {
-                  return Container(
-                    height: MediaQuery.of(context).size.height -
-                        kToolbarHeight -
-                        kBottomNavigationBarHeight -
-                        30,
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
+                  case ConnectionState.none:
+                  case ConnectionState.done:
+                  default:
+                    return Container(
+                      height: MediaQuery.of(context).size.height -
+                          kToolbarHeight -
+                          kBottomNavigationBarHeight -
+                          30,
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                 }
               },
             ),

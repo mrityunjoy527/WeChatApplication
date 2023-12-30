@@ -42,7 +42,7 @@ class ChatTile extends StatelessWidget {
             textAlign: model.sendByMe ? TextAlign.end : TextAlign.start,
             style: const TextStyle(
               color: Colors.black38,
-              fontSize: 16,
+              fontSize: 14,
             ),
           ),
         ],
