@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "480704983749",
+    "project_id": "selfmade-flutter-chat",
+    "storage_bucket": "selfmade-flutter-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480704983749:android:290be4f570ea73788c76ac",
+        "android_client_info": {
+          "package_name": "com.example.we_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWXk-W-GIkpRhxSpsMhYwC_Vos4lLl41A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
