@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:we_chat/Screens/chat_room.dart';
-import 'package:we_chat/firebase/firebase_firestore/firebase_firestore_options.dart';
 import 'package:we_chat/firebase/models/user_model.dart';
 
 class ChatPersonTile extends StatelessWidget {
