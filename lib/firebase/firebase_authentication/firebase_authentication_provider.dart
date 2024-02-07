@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_chat/exceptions/auth_exceptions.dart';
 import 'package:we_chat/firebase/firebase_authentication/firebase_authentication.dart';
 import 'package:we_chat/firebase/firebase_firestore/firebase_firestore_provider.dart';
@@ -11,15 +12,32 @@ class FirebaseAuthenticationProvider extends FirebaseAuthentication {
 
   @override
   Future<void> logOut() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove('email');
+    preferences.remove('uid');
+    preferences.remove('emailVerified');
     await _auth.signOut();
   }
 
   @override
-  Future<void> sendPasswordResetLink({required String email}) async {}
+  Future<void> sendPasswordResetLink({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    }on FirebaseAuthException catch(e) {
+      switch(e.code) {
+        case 'invalid-email': throw InvalidEmailAuthException();
+        case 'user-not-found': throw UserNotFountAuthException();
+        default: throw GeneralAuthException();
+      }
+    } catch(e) {
+      throw GeneralAuthException();
+    }
+  }
 
   @override
   Future<FirebaseUserModel?> signIn(
       {required String email, required String password}) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     try {
       final result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -27,7 +45,11 @@ class FirebaseAuthenticationProvider extends FirebaseAuthentication {
       if (user == null) {
         return null;
       } else {
-        return giveUser();
+        final person = giveUser();
+        preferences.setString('email', person!.email);
+        preferences.setString('uid', person.uid);
+        preferences.setBool('emailVerified', person.emailVerified);
+        return person;
       }
     } on FirebaseAuthException catch (e) {
       switch(e.code) {

@@ -1,5 +1,6 @@
 import 'package:we_chat/firebase/initialize/initialize_firebase.dart';
 import 'package:we_chat/firebase/initialize/initialize_firebase_provider.dart';
+import 'package:we_chat/firebase/models/firebase_user_model.dart';
 
 class Initialize extends InitializeFirebase {
   final InitializeFirebaseProvider provider;
@@ -7,5 +8,5 @@ class Initialize extends InitializeFirebase {
   Initialize.fromFirebase(this.provider);
 
   @override
-  Future<void> initialize() => provider.initialize();
+  Future<FirebaseUserModel?> initialize() => provider.initialize();
 }

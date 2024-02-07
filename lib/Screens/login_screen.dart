@@ -47,7 +47,19 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: BlocListener<WeChatBloc, WeChatState>(
         listener: (context, state) {
-          if (state is WeChatLoggedOutState && state.exception != null) {
+          if(state is WeChatLoggedOutState && state.sendPasswordResetLink != null) {
+            switch(state.sendPasswordResetLink) {
+              case true: showErrorDialog(
+                  context: context,
+                  title: 'Password reset email sent!',
+                  content: 'Please reset your password');
+              break;
+              default: showErrorDialog(
+                  context: context,
+                  title: 'Invalid email',
+                  content: 'Please check your entered email');
+            }
+          } else if (state is WeChatLoggedOutState && state.exception != null) {
             switch (state.exception.runtimeType) {
               case InvalidEmailAuthException:
                 showErrorDialog(
@@ -156,7 +168,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  String email = _emailController.text;
+                  context.read<WeChatBloc>().add(ForgotPasswordEvent(email: email));
+                },
                 child: Text(
                   "Forgot Password?",
                   style: TextStyle(

@@ -6,17 +6,19 @@ import 'package:we_chat/firebase/firebase_authentication/firebase_authentication
 import 'package:we_chat/firebase/initialize/initialize.dart';
 import 'package:we_chat/firebase/initialize/initialize_firebase_provider.dart';
 import 'package:we_chat/firebase/models/firebase_user_model.dart';
-
 part 'we_chat_event.dart';
-
 part 'we_chat_state.dart';
 
 class WeChatBloc extends Bloc<WeChatEvent, WeChatState> {
   WeChatBloc() : super(const WeChatInitial(isLoading: true)) {
     on<InitializeAppWeChatEvent>((event, emit) async {
       final provider = Initialize.fromFirebase(InitializeFirebaseProvider());
-      await provider.initialize();
-      emit(const WeChatLoggedOutState(exception: null, isLoading: false));
+      final user = await provider.initialize();
+      if(user != null) {
+        emit(WeChatLoggedInState(user: user, isLoading: false));
+      } else {
+        emit(const WeChatLoggedOutState(exception: null, isLoading: false));
+      }
     });
 
     on<LogInWeChatEvent>((event, emit) async {
@@ -90,6 +92,18 @@ class WeChatBloc extends Bloc<WeChatEvent, WeChatState> {
       final email = await provider.sendEmailVerification();
       emit(WeChatLoggedOutState(
           exception: null, isLoading: false, email: email));
+    });
+
+    on<ForgotPasswordEvent>((event, emit) async {
+      emit(const WeChatLoggedOutState(exception: null, isLoading: true));
+      final provider =
+      Authentication.fromFirebase(FirebaseAuthenticationProvider());
+      try {
+        await provider.sendPasswordResetLink(email: event.email);
+        emit(const WeChatLoggedOutState(exception: null, isLoading: false, sendPasswordResetLink: true));
+      }on Exception catch(e) {
+        emit(WeChatLoggedOutState(exception: e, isLoading: false, sendPasswordResetLink: false));
+      }
     });
   }
 }

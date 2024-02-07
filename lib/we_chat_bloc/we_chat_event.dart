@@ -49,5 +49,6 @@ class LogOutWeChatEvent extends WeChatEvent {
 }
 
 class ForgotPasswordEvent extends WeChatEvent {
-  const ForgotPasswordEvent();
+  final String email;
+  const ForgotPasswordEvent({required this.email});
 }

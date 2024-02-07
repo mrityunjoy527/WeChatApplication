@@ -21,6 +21,7 @@ class WeChatLoggedOutState extends WeChatState with EquatableMixin {
   final Exception? exception;
   final String? email;
   final String? password;
+  final bool? sendPasswordResetLink;
 
   const WeChatLoggedOutState({
     required this.exception,
@@ -28,6 +29,7 @@ class WeChatLoggedOutState extends WeChatState with EquatableMixin {
     String? loadingText,
     this.email,
     this.password,
+    this.sendPasswordResetLink,
   }) : super(isLoading: isLoading);
 
   @override
